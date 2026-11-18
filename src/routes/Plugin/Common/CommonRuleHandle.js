@@ -76,6 +76,8 @@ export default class CommonRuleHandle extends Component {
       form,
     } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
+    const handleType =
+      getFieldValue("handleType") || (pluginHandleList.length ? "1" : "2");
     return (
       <FormItem
         required={true}
@@ -90,7 +92,7 @@ export default class CommonRuleHandle extends Component {
         <div
           className={styles.handleWrap}
           style={{
-            display: getFieldValue("handleType") === "1" ? "flex" : "none",
+            display: handleType === "1" ? "flex" : "none",
             marginTop: 0,
           }}
         >
@@ -271,7 +273,7 @@ export default class CommonRuleHandle extends Component {
         </div>
         <FormItem
           style={{
-            display: getFieldValue("handleType") === "2" ? "block" : "none",
+            display: handleType === "2" ? "block" : "none",
           }}
         >
           {getFieldDecorator("handleJSON", {
