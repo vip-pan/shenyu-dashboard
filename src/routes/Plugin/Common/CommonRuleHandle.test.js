@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { act, render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import Form from "../../../components/ui/Form";
 import CommonRuleHandle, {
   isValidHandleJSON,
@@ -92,3 +92,48 @@ describe("validateHandleJSON", () => {
     expect(errors.handleJSON).toBeTruthy();
   });
 });
+
+it.each([true, false])(
+  "shows asynchronously loaded handles (structured=%s)",
+  (structured) => {
+    let form;
+    const Harness = Form.create()((props) => {
+      form = props.form;
+      return (
+        <Form>
+          {props.loaded && (
+            <CommonRuleHandle
+              form={props.form}
+              pluginHandleList={
+                structured
+                  ? [
+                      [
+                        {
+                          field: "contextPath",
+                          label: "contextPath",
+                          dataType: 2,
+                          value: "/http",
+                        },
+                      ],
+                    ]
+                  : []
+              }
+              multiRuleHandle={false}
+            />
+          )}
+        </Form>
+      );
+    });
+    const view = render(<Harness loaded={false} />);
+    view.rerender(<Harness loaded />);
+    let element = structured
+      ? screen.getByDisplayValue("/http")
+      : view.container.querySelector("textarea");
+    expect(element).not.toBeNull();
+    while (element) {
+      expect(element.style.display).not.toBe("none");
+      element = element.parentElement;
+    }
+    expect(form.getFieldValue("handleType")).toBe(structured ? "1" : "2");
+  },
+);
